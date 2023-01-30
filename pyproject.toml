@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "checkmetrics"
+version = "0.0.3"
+description = ""
+authors = ["FALL Mor <mor.fall@orange.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-dotenv = "^0.21.1"
+requests = "^2.28.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+checkmetrics = "checkmetrics:main"
