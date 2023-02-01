@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "checkmetrics"
-version = "0.0.3"
+version = "0.1.2"
 description = ""
 authors = ["FALL Mor <mor.fall@orange.com>"]
 readme = "README.md"

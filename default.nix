@@ -1,22 +1,5 @@
+let pkgs = import <nixpkgs> {}; in
 {
-pkgs ? import <nixpkgs> {}
-}:
-
-with pkgs;
-with pkgs.lib;
-
-let
-    checkmetrics = poetry2nix.mkPoetryApplication rec {
-    projectDir = ./.;
-    python = pkgs.python38;
-
-    meta = with pkgs.lib; {
-      description = "checkmetrics";
-    };
-  };
-
-in checkmetrics.overrideAttrs (old: rec {
-  pname = "checkmetrics";
-  version = old.version;
-  name = "${pname}-${version}";
-})
+	getrancherCreds = pkgs.callPackage ./getRancherCreds/default.nix {};
+	checkmetrics = pkgs.callPackage ./checkmetrics/default.nix {};
+}
