@@ -2,7 +2,6 @@
 # shellcheck shell=bash
 
 ZONE=$1
-RES_FILE=$2
 
 usage() {
   echo "$0 <zone>"
@@ -38,9 +37,7 @@ set_rancher_vars() {
   vault_login
   vault_json=$(vault read secret/concourse-infra/global/kubernetes-"${zone}" -format=json)
   RANCHER_TOKEN=$(echo "${vault_json}" | jq -r ".data.token") 
-  echo RANCHER_TOKEN=$RANCHER_TOKEN > $RES_FILE 
   RANCHER_URL=$(echo "${vault_json}" | jq -r ".data.url")
-  echo RANCHER_URL=$RANCHER_URL >> $RES_FILE
 }
 
 refresh_caascad_zones
