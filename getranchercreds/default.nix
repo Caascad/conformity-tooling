@@ -2,12 +2,11 @@
   pkgs ? import <nixpkgs> {}
 }:
 pkgs.stdenv.mkDerivation rec {
-  pname = "getRancherCreds";
+  pname = "get-rancher-creds";
   version = "0.1.0";
   dontBuild = true;
   dontConfigure = true;
   unpackPhase = ":";
-  #src = ./getRancherCreds.sh;
 
   buildInputs = [
     pkgs.jq
@@ -17,8 +16,8 @@ pkgs.stdenv.mkDerivation rec {
   ];
   installPhase = ''
     mkdir -p $out/bin
-    cp ${./getRancherCreds.sh} $out/bin/getRancherCreds
-    chmod +x $out/bin/getRancherCreds
+    cp ${./getRancherCreds.sh} $out/bin/get-rancher-creds
+    chmod +x $out/bin/get-rancher-creds
   '';
 }
 

@@ -2,6 +2,6 @@
  pkgs ? import <nixpkgs> {}
 }:
 {
-	getrancherCreds = pkgs.callPackage ./getRancherCreds/default.nix {};
+	getranchercreds = pkgs.callPackage ./getranchercreds/default.nix {};
 	checkmetrics = pkgs.callPackage ./checkmetrics/default.nix {};
 }
