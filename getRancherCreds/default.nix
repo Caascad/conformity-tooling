@@ -17,8 +17,8 @@ pkgs.stdenv.mkDerivation rec {
   ];
   installPhase = ''
     mkdir -p $out/bin
-    chmod +x ${./getRancherCreds.sh}
     cp ${./getRancherCreds.sh} $out/bin/getRancherCreds
+    chmod +x $out/bin/getRancherCreds
   '';
 }
 
