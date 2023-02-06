@@ -16,7 +16,7 @@ let
   };
 
 in checkmetrics.overrideAttrs (old: rec {
-  pname = "checkmetrics";
+  pname = "check-metrics";
   version = old.version;
   name = "${pname}-${version}";
 })
