@@ -47,8 +47,7 @@ parser.add_argument('-D', '--duration',
             )
 parser.add_argument('-d', '--debug',
             dest='DEBUG_MODE',
-            action='store_false',
-            # action='store_true',
+            action='store_true',
             help='This parameter set to True enables the debug mode.',
             required=False
             )
@@ -70,15 +69,8 @@ except ValueError:
   print(f"Duration argument {args.DURATION} is not a valid integer.", file=sys.stderr) 
   sys.exit(1)
 
-# Verify that the prometheus namespace is from the valid_prometheus_namespace list.
-valid_prometheus_namespace = {"monitoring", "monitoring-client", "monitoring-app", "monitoring-consumption"}
-if args.PROMETHEUS_NAMESPACE not in valid_prometheus_namespace:
-    # raise ValueError(f"Prometheus Namespace must be one of {valid_prometheus_namespace}")
-    print(f"Prometheus Namespace must be one of {valid_prometheus_namespace}.", file=sys.stderr)
-    sys.exit(1)
-    
 # Verify that all arguments listed in args_list are of type string.
-args_list = [ RANCHER_URL, args.QUERY, RANCHER_TOKEN, args.PROMETHEUS_SERVICE ]
+args_list = [ RANCHER_URL, args.QUERY, RANCHER_TOKEN, args.PROMETHEUS_SERVICE, args.PROMETHEUS_NAMESPACE ]
 for idx, argument in enumerate(args_list):  
   if not isinstance(argument, str):
     # Print a message if the argument is not a script, then escape the script with an error. 
@@ -106,8 +98,9 @@ while response is None:
     response = requests.get(url, headers = headers)
     jsonResponse = response.json()
     if args.DEBUG_MODE:
-      print("INFO: url: " + endpoint)
-      print("INFO: response: " + response)
+      print(f"INFO: url: {endpoint}")
+      print("INFO: status_code: " + str(response))
+      print("INFO: response: " +str(jsonResponse)) 
   except requests.HTTPError as e:
     if args.DEBUG_MODE:
       print(response.raise_for_status(), file=sys.stderr)
