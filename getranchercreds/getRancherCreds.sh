@@ -9,12 +9,16 @@ DOMAIN=${DOMAIN:-caascad.com}
 unset RANCHER_URL
 unset RANCHER_TOKEN
 
-usage() {
-  echo "$0 <zone>"
-  echo ""
-  echo "Examples :"
-  echo "    $0 ocb-test01"
-  echo "    $0 infra-stg"
+Help()
+{
+   echo "Retrieve, then export RANCHER_URL and RANCHER_TOKEN variables from the requested zone."
+   echo
+   echo "Syntax: checkmetrics [[ZONE]|-h|--help]"
+   echo "options:"
+   echo "-h         Print the help."
+   echo "[ZONE]     Retrieve the credentials from the requested zone."
+   echo ""
+   echo  "Usage: checkmetrics ocb-test06"
 }
 
 refresh_caascad_zones() {
@@ -45,6 +49,19 @@ set_rancher_vars() {
   export RANCHER_TOKEN=$(echo "${vault_json}" | jq -r ".data.token") 
   export RANCHER_URL=$(echo "${vault_json}" | jq -r ".data.url")
 }
+
+while getopts ":h" option; do
+   case $option in
+      "h"|"help")
+         Help;
+         exit;;
+   esac
+done
+
+if [[ $1 == "" ]]; then
+  Help
+  exit
+fi
 
 refresh_caascad_zones
 set_rancher_vars "${ZONE}"

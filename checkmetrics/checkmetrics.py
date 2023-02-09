@@ -16,7 +16,9 @@ parser.add_argument('-Z', '--zone',
 parser.add_argument('-U', '--rancher_url',
             dest='RANCHER_URL',
             help='Provide the Rancher URL.',
-            required=False
+            required=False,
+            nargs='?',
+            default=None
             )
 parser.add_argument('-Q', '--single-query',
             dest='QUERY',
@@ -32,7 +34,9 @@ parser.add_argument('-F', '--from_stdin',
 parser.add_argument('-T', '--rancher_token',
             dest='RANCHER_TOKEN',
             help='Provide the rancher token to authenticate to the apps.',
-            required=False
+            required=False,
+            nargs='?',
+            default=None
             )
 parser.add_argument('-S', '--prom_service',
             dest='PROMETHEUS_SERVICE',
@@ -62,11 +66,7 @@ args = parser.parse_args()
 def main():
   pass
 
-# Rancher credentials are by default initialized with the value of the arguments of the script. If none, setRancher.sh will be launched.   
-RANCHER_URL=args.RANCHER_URL
-RANCHER_TOKEN=args.RANCHER_TOKEN
-
-if not RANCHER_URL or not RANCHER_TOKEN: 
+if (not args.RANCHER_URL) or (args.RANCHER_URL=="") or (args.RANCHER_URL is None) or (not args.RANCHER_TOKEN) or (args.RANCHER_TOKEN=="") or (args.RANCHER_TOKEN is None): 
   print(
           """ 
 RANCHER_URL or RANCHER_TOKEN variables could not be found.
@@ -74,7 +74,7 @@ RANCHER_URL or RANCHER_TOKEN variables could not be found.
 If you are executing this script locally, you might need to retrieve RANCHER_URL and RANCHER_TOKEN variables. To do so, you need to install the tools get-rancher-creds and vault : 
 $ toolbox install vault
 $ toolbox install get-rancher-creds
-# This last command will add the requested variables as environnment variables.. 
+# This last command will add the requested variables as environnment variables. 
 $ source get-rancher-creds $zone 1>/dev/null
 """
   )
@@ -82,7 +82,7 @@ $ source get-rancher-creds $zone 1>/dev/null
   sys.exit(1)
 
 def checkMetric():
-  endpoint = f"{RANCHER_URL}/api/v1/namespaces/{args.PROMETHEUS_NAMESPACE}/services/{args.PROMETHEUS_SERVICE}:web/proxy/api/v1/"
+  endpoint = f"{args.RANCHER_URL}/api/v1/namespaces/{args.PROMETHEUS_NAMESPACE}/services/{args.PROMETHEUS_SERVICE}:web/proxy/api/v1/"
 
   # Check the validity of the arguments. 
   try:
@@ -92,7 +92,7 @@ def checkMetric():
     sys.exit(1)
 
   # Verify that all arguments listed in args_list are of type string.
-  args_list = [ RANCHER_URL, QUERY, RANCHER_TOKEN, args.PROMETHEUS_SERVICE, args.PROMETHEUS_NAMESPACE ]
+  args_list = [ args.RANCHER_URL, QUERY, args.RANCHER_TOKEN, args.PROMETHEUS_SERVICE, args.PROMETHEUS_NAMESPACE ]
   for idx, argument in enumerate(args_list):  
     if not isinstance(argument, str):
       # Print a message if the argument is not a script, then escape the script with an error. 
@@ -109,7 +109,7 @@ def checkMetric():
     d2 = d1 - int(args.DURATION)
     prom_query = f"query_range?query={str(QUERY)}&start={d2}&end={d1}&step=15s"
 
-  headers = {'Authorization': 'Bearer ' + RANCHER_TOKEN,
+  headers = {'Authorization': 'Bearer ' + args.RANCHER_TOKEN,
         'Content-Type': 'application/json'}
 
   # Send get request and save response as response object
