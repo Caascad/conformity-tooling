@@ -13,12 +13,12 @@ Help()
 {
    echo "Retrieve, then export RANCHER_URL and RANCHER_TOKEN variables from the requested zone."
    echo
-   echo "Syntax: checkmetrics [[ZONE]|-h|--help]"
+   echo "Syntax: get-rancher-creds [[ZONE]|-h|--help]"
    echo "options:"
    echo "-h         Print the help."
    echo "[ZONE]     Retrieve the credentials from the requested zone."
    echo ""
-   echo  "Usage: checkmetrics ocb-test06"
+   echo  "Usage: get-rancher-creds [ZONE]"
 }
 
 refresh_caascad_zones() {
