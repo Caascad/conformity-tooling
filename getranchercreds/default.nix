@@ -3,7 +3,7 @@
 }:
 pkgs.stdenv.mkDerivation rec {
   pname = "get-rancher-creds";
-  version = "0.2.0";
+  version = "0.2.1";
   dontBuild = true;
   dontConfigure = true;
   unpackPhase = ":";

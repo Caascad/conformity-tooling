@@ -6,9 +6,6 @@ DOMAIN=$2
 
 DOMAIN=${DOMAIN:-caascad.com}
 
-unset RANCHER_URL
-unset RANCHER_TOKEN
-
 Help()
 {
    echo "Retrieve, then export RANCHER_URL and RANCHER_TOKEN variables from the requested zone."
@@ -27,7 +24,14 @@ refresh_caascad_zones() {
   elif [ -e "${CAASCAD_ZONES_FILE}" ]; then
     CAASCAD_ZONES=$(cat "${CAASCAD_ZONES_FILE}")
   else
-    CAASCAD_ZONES=$(sd get zones 2> /dev/null)
+    if ! command -v sd; then 
+	    echo """[WARNING] sd command missing. Please install it with the toolbox (see below), then retry. 
+$ toolbox install sd
+      """; 
+      exit;
+    else
+      CAASCAD_ZONES=$(sd get zones 2> /dev/null);
+    fi
   fi
 }
 
@@ -65,6 +69,5 @@ fi
 
 refresh_caascad_zones
 set_rancher_vars "${ZONE}"
-echo "RANCHER_URL: $RANCHER_URL" 
-echo "RANCHER_TOKEN: $RANCHER_TOKEN" 
-
+echo "RANCHER_URL=$RANCHER_URL" 
+echo "RANCHER_TOKEN=$RANCHER_TOKEN" 

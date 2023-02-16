@@ -20,16 +20,10 @@ parser.add_argument('-U', '--rancher_url',
             nargs='?',
             default=None
             )
-parser.add_argument('-Q', '--single-query',
+parser.add_argument('-Q', '--query',
             dest='QUERY',
-            help='Provide a single query.',
-            required=False
-            )
-parser.add_argument('-F', '--from_stdin',
-            dest='STDIN',
-            action='store_true',
-            help='Provide queries using stdin',
-            required=False
+            help='Provide one or multiple queries. -Q followed by a query will execute checkmetrics on that query. If -Q option is followed by "-" character, checkmetrics will instead read the contents from stdin. If -Q option is followed by "@" character, checkmetrics will instead read the contents of a file.',
+            required=True
             )
 parser.add_argument('-T', '--rancher_token',
             dest='RANCHER_TOKEN',
@@ -66,23 +60,40 @@ args = parser.parse_args()
 def main():
   pass
 
-if (not args.RANCHER_URL) or (args.RANCHER_URL=="") or (args.RANCHER_URL is None) or (not args.RANCHER_TOKEN) or (args.RANCHER_TOKEN=="") or (args.RANCHER_TOKEN is None): 
+def printInfo():
   print(
-          """ 
+""" 
 RANCHER_URL or RANCHER_TOKEN variables could not be found.
 
 If you are executing this script locally, you might need to retrieve RANCHER_URL and RANCHER_TOKEN variables. To do so, you need to install the tools get-rancher-creds and vault : 
 $ toolbox install vault
 $ toolbox install get-rancher-creds
 # This last command will add the requested variables as environnment variables. 
-$ source get-rancher-creds $zone 1>/dev/null
+$ source get-rancher-creds [ZONE] 1>/dev/null
 """
-  )
+)
 
-  sys.exit(1)
+if args.RANCHER_URL and args.RANCHER_TOKEN:
+  RANCHER_URL = args.RANCHER_URL
+  RANCHER_TOKEN = args.RANCHER_TOKEN
+
+# If the two variables are not defined, they are loaded from environnement variables. 
+if not args.RANCHER_URL:
+  if (os.getenv('RANCHER_URL')) and (os.getenv('RANCHER_URL') != None):
+    RANCHER_URL = os.environ['RANCHER_URL']
+  else:
+    printInfo()
+    sys.exit(1)
+    
+if not args.RANCHER_TOKEN:
+  if (os.getenv('RANCHER_TOKEN')) and (os.getenv('RANCHER_TOKEN') != None):
+    RANCHER_TOKEN = os.environ['RANCHER_TOKEN']
+  else:
+    printInfo()
+    sys.exit(1)
 
 def checkMetric():
-  endpoint = f"{args.RANCHER_URL}/api/v1/namespaces/{args.PROMETHEUS_NAMESPACE}/services/{args.PROMETHEUS_SERVICE}:web/proxy/api/v1/"
+  endpoint = f"{RANCHER_URL}/api/v1/namespaces/{args.PROMETHEUS_NAMESPACE}/services/{args.PROMETHEUS_SERVICE}:web/proxy/api/v1/"
 
   # Check the validity of the arguments. 
   try:
@@ -92,7 +103,7 @@ def checkMetric():
     sys.exit(1)
 
   # Verify that all arguments listed in args_list are of type string.
-  args_list = [ args.RANCHER_URL, QUERY, args.RANCHER_TOKEN, args.PROMETHEUS_SERVICE, args.PROMETHEUS_NAMESPACE ]
+  args_list = [ RANCHER_URL, QUERY, RANCHER_TOKEN, args.PROMETHEUS_SERVICE, args.PROMETHEUS_NAMESPACE ]
   for idx, argument in enumerate(args_list):  
     if not isinstance(argument, str):
       # Print a message if the argument is not a script, then escape the script with an error. 
@@ -109,7 +120,7 @@ def checkMetric():
     d2 = d1 - int(args.DURATION)
     prom_query = f"query_range?query={str(QUERY)}&start={d2}&end={d1}&step=15s"
 
-  headers = {'Authorization': 'Bearer ' + args.RANCHER_TOKEN,
+  headers = {'Authorization': 'Bearer ' + RANCHER_TOKEN,
         'Content-Type': 'application/json'}
 
   # Send get request and save response as response object
@@ -152,27 +163,27 @@ def checkMetric():
     
   print(f"Got {nb_results} lines from {url}")
 
-# exit if -Q and -F arguments are used together by the user.
-if args.STDIN and args.QUERY:
-  print("Either use -Q/--single-query OR -F/--from_stdin option is required.")
-  sys.exit(1)  
-
-# loop stdin inputs with the checkmetric() function if -F option is used.
-elif args.STDIN:
-  STDIN = sys.stdin.read().strip().split(" ")
+# loop stdin inputs with the checkmetric() function if -Q option is followed by -.
+if args.QUERY == "-":
+  STDIN = sys.stdin.read().strip().split('\n')
   count = len(STDIN)
   for idx in range(count):
     QUERY = STDIN[idx]
     checkMetric()
 
+# Inputs are stored within a file. 
+elif args.QUERY.startswith('@'):
+  FILE_NAME = args.QUERY[1:]
+  with open(FILE_NAME, 'r') as f:
+    QUERY_LIST = [line for line in f]
+    for idx, query in enumerate(QUERY_LIST):
+      QUERY = query
+      checkMetric()
+
 # single execute checkmetrics if -Q option is used.
-elif args.QUERY:
+else:
   QUERY = args.QUERY
   checkMetric()
-
-else:
-  print("Either use -Q/--single-query OR -F/--from_stdin option is required.")
-  sys.exit(1)
 
 # If everything is OK, force exit(0)
 sys.exit(0)
