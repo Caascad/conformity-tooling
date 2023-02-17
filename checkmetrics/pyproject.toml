@@ -1,9 +1,8 @@
 [tool.poetry]
 name = "checkmetrics"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 authors = ["FALL Mor <mor.fall@orange.com>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
