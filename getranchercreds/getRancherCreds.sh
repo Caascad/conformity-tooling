@@ -24,7 +24,7 @@ refresh_caascad_zones() {
   elif [ -e "${CAASCAD_ZONES_FILE}" ]; then
     CAASCAD_ZONES=$(cat "${CAASCAD_ZONES_FILE}")
   else
-    if ! command -v sd; then 
+    if ! command -v sd 1>/dev/null; then 
 	    echo """[WARNING] sd command missing. Please install it with the toolbox (see below), then retry. 
 $ toolbox install sd
       """; 

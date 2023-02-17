@@ -8,11 +8,6 @@ import subprocess
 from dotenv import load_dotenv
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-Z', '--zone',
-            dest='ZONE',
-            help='Provide the zone.',
-            required=True
-            )
 parser.add_argument('-U', '--rancher_url',
             dest='RANCHER_URL',
             help='Provide the Rancher URL.',
