@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "restit"
+version = "0.1.0"
+description = ""
+authors = ["FALL Mor <mor.fall@orange.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+restit = "restit:main"
