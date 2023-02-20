@@ -1,0 +1,2 @@
+thanos_build_info
+up
