@@ -1,6 +1,8 @@
 {
-  pkgs ? import <nixpkgs> {}
+  sources ? import ../nix/sources.nix
+, pkgs ? import sources.nixpkgs {}
 }:
+
 pkgs.stdenv.mkDerivation rec {
   pname = "get-rancher-creds";
   version = "0.2.1";
