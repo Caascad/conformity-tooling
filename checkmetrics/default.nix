@@ -1,11 +1,11 @@
 {
   sources ? import ../nix/sources.nix
 , pkgs ? import sources.nixpkgs {}
-, poetry2nix ? import sources.poetry2nix {}
+, poetry2nixStandalone ? import sources.poetry2nix {}
 }:
 
 let
-    checkmetrics = poetry2nix.mkPoetryApplication rec {
+    checkmetrics = poetry2nixStandalone.mkPoetryApplication rec {
     projectDir = ./.;
     python = pkgs.python3;
 
