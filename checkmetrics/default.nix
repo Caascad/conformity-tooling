@@ -1,14 +1,13 @@
 {
-pkgs ? import <nixpkgs> {}
+  sources ? import ../nix/sources.nix
+, pkgs ? import sources.nixpkgs {}
+, poetry2nixStandalone ? import sources.poetry2nix {}
 }:
 
-with pkgs;
-with pkgs.lib;
-
 let
-    checkmetrics = poetry2nix.mkPoetryApplication rec {
+    checkmetrics = poetry2nixStandalone.mkPoetryApplication rec {
     projectDir = ./.;
-    python = pkgs.python38;
+    python = pkgs.python3;
 
     meta = with pkgs.lib; {
       description = "checkmetrics";
